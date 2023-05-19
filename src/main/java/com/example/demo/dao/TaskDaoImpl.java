@@ -12,11 +12,14 @@ import org.springframework.stereotype.Repository;
 import com.example.demo.entity.Task;
 import com.example.demo.entity.TaskType;
 
+
+
 @Repository
 public class TaskDaoImpl implements TaskDao {
 
 	private final JdbcTemplate jdbcTemplate;
 
+	
 	public TaskDaoImpl(JdbcTemplate jdbcTemplate) {
 		this.jdbcTemplate = jdbcTemplate;
 	}
@@ -27,8 +30,6 @@ public class TaskDaoImpl implements TaskDao {
 		String sql = "SELECT task.id, user_id, type_id, title, detail, deadline, "
 				+ "type, comment FROM task "
 				+ "INNER JOIN task_type ON task.type_id = task_type.id";
-
-		//削除してください
 
 		//タスク一覧をMapのListで取得
 		List<Map<String, Object>> resultList = jdbcTemplate.queryForList(sql);
@@ -68,7 +69,7 @@ public class TaskDaoImpl implements TaskDao {
 				+ "WHERE task.id = ?";
 
 		//タスクを一件取得
-		Map<String, Object> result = jdbcTemplate.queryForMap(spl, id);
+		Map<String, Object> result = jdbcTemplate.queryForMap(sql, id);
 
 		Task task = new Task();
 		task.setId((int)result.get("id"));
@@ -83,7 +84,6 @@ public class TaskDaoImpl implements TaskDao {
 		type.setType((String)result.get("type"));
 		type.setComment((String)result.get("comment"));
 		task.setTaskType(type);
-
 
 
 		//taskをOptionalでラップする
@@ -102,12 +102,14 @@ public class TaskDaoImpl implements TaskDao {
 	public int update(Task task) {
 		return jdbcTemplate.update("UPDATE task SET type_id = ?, title = ?, detail = ?,deadline = ? WHERE id = ?",
 				task.getTypeId(), task.getTitle(), task.getDetail(), task.getDeadline(), task.getId() );
+		
 	}
 
 	@Override
 	public int deleteById(int id) {
 		return jdbcTemplate.update("DELETE FROM task WHERE id = ?", id);
 	}
+
 
 	@Override
 	public List<Task> findByType(int typeId) {
