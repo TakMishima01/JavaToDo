@@ -43,10 +43,12 @@ public class TaskController {
     public String task(TaskForm taskForm, Model model) {
 
     	//新規登録か更新かを判断する仕掛け
+    	taskForm.setNewTask(true);
 
         //Taskのリストを取得する
+    	List<Task> list = taskService.findAll();
 
-        model.addAttribute("list", "");
+        model.addAttribute("list", list);
         model.addAttribute("title", "タスク一覧");
 
         return "task/index";
@@ -65,15 +67,20 @@ public class TaskController {
         BindingResult result,
         Model model) {
 
+    	//TaskFormのデータをTaskに格納
+//    	Task task = new Task();
+//    	task.setUserId(1);
+//    	task.setTypeId(taskForm.getTypeId());
+//    	task.setTitle(taskForm.getTitle());
+//    	task.setDetail(taskForm.getDetail());
+//    	task.setDeadline(taskForm.getDeadline());
+    	Task task = makeTask(taskForm, 0);
+    	
         if (!result.hasErrors()) {
-        	//削除してください
-        	Task task = null;
-
-        	//TaskFormのデータをTaskに格納
 
         	//一件挿入後リダイレクト
-
-            return "";
+        	taskService.insert(task);
+            return "redirect://task";
         } else {
             taskForm.setNewTask(true);
             model.addAttribute("taskForm", taskForm);
